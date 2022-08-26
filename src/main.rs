@@ -49,16 +49,16 @@ struct Args {
 }
 
 /// Divide the Player Base into even sized teams until
-fn fn_even_split(min_size: usize, max_size: usize, player_base: usize, rooms: &mut Vec<RoomDimension>) -> bool {
-    println!("**** TRY EVEN SPLIT ****");
+fn fn_even_split(min_size: usize, max_size: usize, player_base: usize, single_pass: bool, rooms: &mut Vec<RoomDimension>) -> bool {
+    //println!("**** TRY EVEN SPLIT ****");
     let mut team_count = 2;
     while team_count < max_size {
         let team_size = player_base / team_count; // Drops the decimal, use modules to get the remainder
 
-        println!("Room Count: {team_count}, Room Size {team_size}");
+        //println!("Room Count: {team_count}, Room Size {team_size}");
         // Check team size meets match conditions, and no remainders
         if (team_size <= max_size) && (team_size >= min_size) && (player_base % team_count == 0) {
-            println!("{team_count} rooms can be made of {team_size} players");
+            //println!("{team_count} rooms can be made of {team_size} players");
             rooms.push(RoomDimension {
                 capacity: team_size,
                 amount: team_count
@@ -71,8 +71,11 @@ fn fn_even_split(min_size: usize, max_size: usize, player_base: usize, rooms: &m
         team_count += 1;
     }
 
+    if single_pass{
+        println!("Unable to evenly split teams");
+    }
+
     return false;
-    println!("Unable to balance");
 }
 
 // fn break_input() {
@@ -81,21 +84,21 @@ fn fn_even_split(min_size: usize, max_size: usize, player_base: usize, rooms: &m
 // }
 
 /// Fill rooms, and balance remainder into matches so there are two sets to capacities
-fn fn_full_balance(min_size: usize, max_size: usize, player_base: usize, rooms: &mut Vec<RoomDimension>) -> bool {
-    println!("**** TRY FULL BALANCE ****");
+fn fn_full_balance(min_size: usize, max_size: usize, player_base: usize, single_pass: bool, rooms: &mut Vec<RoomDimension>) -> bool {
+    //println!("**** TRY FULL BALANCE ****");
     // ** Full Matches
     let full_rooms = player_base / max_size;
     // ** Remainder
     let remainder = player_base % max_size;
-    println!("Remainder: {remainder}");
+    //println!("Remainder: {remainder}");
 
     // ** Check Remainders can play a game...
     if remainder >= min_size || remainder == 0
     {
         // *** Start the game
-        println!("Enough remainders to enter their own game.");
-        let open_rooms = remainder / min_size;
-        println!("Full Rooms: {full_rooms}, Open Rooms: {open_rooms} with {remainder} players");
+        //println!("Enough remainders to enter their own game.");
+        //let open_rooms = remainder / min_size;
+        //println!("Full Rooms: {full_rooms}, Open Rooms: {open_rooms} with {remainder} players");
         
         rooms.push(RoomDimension {
             capacity: max_size,
@@ -110,10 +113,10 @@ fn fn_full_balance(min_size: usize, max_size: usize, player_base: usize, rooms: 
     }
     else
     {
-        println!("Going to rebalance");
+        //println!("Going to rebalance");
         // *** Require Rebalance
-        let open_places = min_size - remainder;
-        println!("Open Places: {open_places}");
+        //let open_places = min_size - remainder;
+        //println!("Open Places: {open_places}");
 
         // -----------------------
 
@@ -133,8 +136,8 @@ fn fn_full_balance(min_size: usize, max_size: usize, player_base: usize, rooms: 
 
         if balance_remainder == 0 {
             let real_full_match = full_rooms + 1 - matches_to_affect;
-            let players_in_full = real_full_match * max_size;
-            println!("Real full matches: {real_full_match}, Players: {players_in_full}");
+            //let players_in_full = real_full_match * max_size;
+            //println!("Real full matches: {real_full_match}, Players: {players_in_full}");
 
             rooms.push(RoomDimension {
                 capacity: real_full_match,
@@ -142,39 +145,43 @@ fn fn_full_balance(min_size: usize, max_size: usize, player_base: usize, rooms: 
             });
 
             let players_in_balaced = matches_to_affect * balanced_cap;
-            println!("Balanced full matches: {matches_to_affect}, Players: {players_in_balaced}");
+            //println!("Balanced full matches: {matches_to_affect}, Players: {players_in_balaced}");
             
             rooms.push(RoomDimension {
                 capacity: players_in_balaced,
                 amount: matches_to_affect
             });
 
-            let full_balance_players = players_in_full + players_in_balaced;
-            println!("Balanced Players: {full_balance_players}");
+            //let full_balance_players = players_in_full + players_in_balaced;
+            //println!("Balanced Players: {full_balance_players}");
             
             return true;
         }
+    }
+
+    if single_pass{
+        println!("Unable to balance rooms");
     }
     return false;
 }
 
 /// Fill matches, and balance last 2 matches. OK if uneven.
-fn fn_full_tail_balance(min_size: usize, max_size: usize, player_base: usize, rooms: &mut Vec<RoomDimension>) -> bool {
-    println!("**** TRY FULL TAIL BALANCE ****");
+fn fn_full_tail_balance(min_size: usize, max_size: usize, player_base: usize, _single_pass: bool, rooms: &mut Vec<RoomDimension>) -> bool {
+    //println!("**** TRY FULL TAIL BALANCE ****");
     // ** Full Matches
     let mut full_rooms = player_base / max_size;
-    println!("Full Rooms: {full_rooms}");
+    //println!("Full Rooms: {full_rooms}");
     // ** Remainder
     let remainder = player_base % max_size;
-    println!("Remainder: {remainder}");
+    //println!("Remainder: {remainder}");
 
     // ** Check Remainders can play a game...
     if remainder >= min_size || remainder == 0 {
         // *** Start the game
-        println!("Enough remainders to enter their own game.");
-        let open_rooms = remainder / min_size;
+        //println!("Enough remainders to enter their own game.");
+        //let open_rooms = remainder / min_size;
 
-        println!("Full Rooms: {full_rooms}, Open Rooms: {open_rooms} with {remainder} players");
+        //println!("Full Rooms: {full_rooms}, Open Rooms: {open_rooms} with {remainder} players");
         
         rooms.push(RoomDimension {
             amount: full_rooms,
@@ -190,10 +197,10 @@ fn fn_full_tail_balance(min_size: usize, max_size: usize, player_base: usize, ro
 
         return true;
     } else {
-        println!("Going to rebalance");
+        //println!("Going to rebalance");
         // *** Require Rebalance
-        let open_places = min_size - remainder;
-        println!("Open Places: {open_places}");
+        //let open_places = min_size - remainder;
+        //println!("Open Places: {open_places}");
 
         // -----------------------
 
@@ -207,10 +214,10 @@ fn fn_full_tail_balance(min_size: usize, max_size: usize, player_base: usize, ro
 
         let new_balance = players_to_affect / 2;
         let is_uneven = players_to_affect % 2 == 0;
-        println!("Full Rooms: {full_rooms} with {max_size} players");
+        //println!("Full Rooms: {full_rooms} with {max_size} players");
         
         if !is_uneven {
-            println!("Balanced Rooms: 2 rooms with {new_balance} players");
+            //println!("Balanced Rooms: 2 rooms with {new_balance} players");
             
             rooms.push(RoomDimension {
                 capacity: new_balance,
@@ -219,11 +226,11 @@ fn fn_full_tail_balance(min_size: usize, max_size: usize, player_base: usize, ro
 
             return true;
         } else {
-            println!(
-                "Balanced Rooms: 2 rooms with {0} and {1}",
-                new_balance,
-                new_balance + 1
-            );
+            // println!(
+            //     "Balanced Rooms: 2 rooms with {0} and {1}",
+            //     new_balance,
+            //     new_balance + 1
+            // );
 
             rooms.push(RoomDimension {
                 capacity: new_balance,
@@ -238,14 +245,14 @@ fn fn_full_tail_balance(min_size: usize, max_size: usize, player_base: usize, ro
         }
     }
 
-    return false; //UNREACHABLE
+    //return false; //UNREACHABLE
 }
 
 /// Play a single match as not enough players to split into multiple rooms
-fn fn_single_round(min_size: usize, max_size: usize, player_base: usize, rooms: &mut Vec<RoomDimension>) -> bool {
-    println!("**** TRY SINGLE ROUND ****");
+fn fn_single_round(min_size: usize, max_size: usize, player_base: usize, single_pass: bool, rooms: &mut Vec<RoomDimension>) -> bool {
+    //println!("**** TRY SINGLE ROUND ****");
     if (player_base <= max_size) && (player_base >= min_size) {
-        println!("Everyone verse Everyone");
+        //println!("Everyone verse Everyone");
         rooms.push(RoomDimension {
             capacity: player_base,
             amount: 1
@@ -254,52 +261,60 @@ fn fn_single_round(min_size: usize, max_size: usize, player_base: usize, rooms: 
         return true;
     }
 
+    if single_pass{
+        println!("Not enough players to conduct a match");
+    }
+
     return false;
 }
 
 /// Create matches based on lowest supported capacity, and places remainders into a match
 /// THIS IS A TIME WASTER, AND BEST TO AVOID UNLESS YOU WANT TO RUIN PEOPLE'S DAY
-fn fn_minimum_fill(min_size: usize, max_size: usize, player_base: usize, rooms: &mut Vec<RoomDimension>) -> bool {
-    println!("**** TRY MINIMUM FILL ****");
+fn fn_minimum_fill(min_size: usize, max_size: usize, player_base: usize, single_pass: bool, rooms: &mut Vec<RoomDimension>) -> bool {
+    //println!("**** TRY MINIMUM FILL ****");
     let matches_to_populate = player_base / min_size;
 
-    println!("Matches to Populate: {matches_to_populate}");
+    //println!("Matches to Populate: {matches_to_populate}");
     let players_to_assign = player_base - (matches_to_populate * min_size);
-    println!("Players to Assign: {players_to_assign}");
-    let matches_with_bare_minimum = matches_to_populate - players_to_assign;
+    //println!("Players to Assign: {players_to_assign}");
+    //let matches_with_bare_minimum = matches_to_populate - players_to_assign;
     let balanced_cap = ((min_size * players_to_assign) + players_to_assign) / players_to_assign;
-    println!("Balanced Cap: {balanced_cap}");
+    //println!("Balanced Cap: {balanced_cap}");
 
-    if balanced_cap > max_size {
-        println!("**** People need to drop out, or find more players");
+    if balanced_cap > max_size
+    {
+        if single_pass{
+            println!("**** People need to drop out, or find more players");
+        }
         return false;
     }
 
-    println!("Players spread around.");
-    println!("{matches_with_bare_minimum} matches with bare minimum of {min_size} player.");
-    println!("{players_to_assign} matches with {balanced_cap} players");
+    //println!("Players spread around.");
+    //println!("{matches_with_bare_minimum} matches with bare minimum of {min_size} player.");
+    //println!("{players_to_assign} matches with {balanced_cap} players");
 
     rooms.push(RoomDimension {
         capacity: balanced_cap,
         amount: matches_to_populate
     });
 
-    let minimum_fill_player_count =
-        (matches_with_bare_minimum * min_size) + (players_to_assign * balanced_cap);
-    println!(
-        "* Total Players: {minimum_fill_player_count} from original player based of {player_base}"
-    );
+    //let minimum_fill_player_count =
+    //    (matches_with_bare_minimum * min_size) + (players_to_assign * balanced_cap);
+    // println!(
+    //     "* Total Players: {minimum_fill_player_count} from original player based of {player_base}"
+    // );
 
     return true;
 }
 
 /// Create matches based on lowest supported capacity, and
 /// THIS IS A TIME WASTER, AND BEST TO AVOID UNLESS YOU WANT TO RUIN PEOPLE'S DAY
-fn fn_lots_of_matches(min_size: usize, max_size: usize, player_base: usize, rooms: &mut Vec<RoomDimension>) -> bool {
-    println!("**** TRY MINIMUM ****");
+//fn fn_lots_of_matches(min_size: usize, max_size: usize, player_base: usize, rooms: &mut Vec<RoomDimension>) -> bool {
+fn fn_lots_of_matches(min_size: usize, player_base: usize, single_pass: bool, rooms: &mut Vec<RoomDimension>) -> bool {
+    //println!("**** TRY MINIMUM ****");
     if player_base % min_size == 0 {
         let room_setup = player_base / min_size;
-        println!("Enough people to fill lowest common denominator. Setup {room_setup} rooms");
+        //println!("Enough people to fill lowest common denominator. Setup {room_setup} rooms");
 
         rooms.push(RoomDimension {
             capacity: min_size,
@@ -309,16 +324,19 @@ fn fn_lots_of_matches(min_size: usize, max_size: usize, player_base: usize, room
         return true;
     }
 
-    println!("Unable to split on lowest team size");
+    if single_pass {
+        println!("Unable to split on lowest team size");
+    }
     return false;
 }
 
 /// Setup rooms where all slots are filled
-fn fn_full_rooms(min_size: usize, max_size: usize, player_base: usize, rooms: &mut Vec<RoomDimension>) -> bool {
-    println!("**** TRY FULL ROOMS ****");
+//fn fn_full_rooms(min_size: usize, max_size: usize, player_base: usize, rooms: &mut Vec<RoomDimension>) -> bool {
+fn fn_full_rooms(max_size: usize, player_base: usize, single_pass: bool, rooms: &mut Vec<RoomDimension>) -> bool {
+    //println!("**** TRY FULL ROOMS ****");
     if player_base % max_size == 0 {
         let room_setup = player_base / max_size;
-        println!("Every match is full. Setup {room_setup} rooms");
+        //println!("Every match is full. Setup {room_setup} rooms");
         
         rooms.push(RoomDimension {
             capacity: max_size,
@@ -328,12 +346,15 @@ fn fn_full_rooms(min_size: usize, max_size: usize, player_base: usize, rooms: &m
         return true;
     }
 
+    if single_pass {
+        println!("Unable to split on maximum room size");
+    }
+    
     return false;
 }
 
 fn main() {
     let args = Args::parse();
-    println!("Hello, world!");
 
     // GET MATCH SIZING
     // * Max Lobby Size
@@ -356,7 +377,7 @@ fn main() {
     let data = fs::read_to_string(input).expect("Unable to read file");
 
     let players = data.lines().count();
-    println!("Name count: {players}");
+    //println!("Name count: {players}");
 
     let player_base = players;
 
@@ -366,50 +387,51 @@ fn main() {
     // BALANCE THE TEAMS
     match mode {
         // * Not enough players to fill a lobby
-        BalanceMode::SingleRoom => result = fn_single_round(min_size, max_size, player_base, &mut rooms),
+        BalanceMode::SingleRoom => result = fn_single_round(min_size, max_size, player_base, true, &mut rooms),
 
         // * Full Rooms
-        BalanceMode::FullRooms => result = fn_full_rooms(min_size, max_size, player_base, &mut rooms),
+        BalanceMode::FullRooms => result = fn_full_rooms(max_size, player_base, true, &mut rooms),
 
         // * Even Split
-        BalanceMode::EvenSplit => result = fn_even_split(min_size, max_size, player_base, &mut rooms),
+        BalanceMode::EvenSplit => result = fn_even_split(min_size, max_size, player_base, true, &mut rooms),
+        
         // * Minimum Fill
-        BalanceMode::QuietRooms => result = fn_minimum_fill(min_size, max_size, player_base, &mut rooms),
+        BalanceMode::QuietRooms => result = fn_minimum_fill(min_size, max_size, player_base, true, &mut rooms),
 
         // * Full and balanced tail
-        BalanceMode::FullTailBalance => result = fn_full_tail_balance(min_size, max_size, player_base, &mut rooms),
+        BalanceMode::FullTailBalance => result = fn_full_tail_balance(min_size, max_size, player_base, true, &mut rooms),
 
         // * Full and balanced
-        BalanceMode::FullBalance => result = fn_full_balance(min_size, max_size, player_base, &mut rooms),
+        BalanceMode::FullBalance => result = fn_full_balance(min_size, max_size, player_base, true, &mut rooms),
 
         // * Lots of Matches
-        BalanceMode::LotsOfMatches => result = fn_lots_of_matches(min_size, max_size, player_base, &mut rooms),
+        BalanceMode::LotsOfMatches => result = fn_lots_of_matches(min_size, player_base, true, &mut rooms),
 
         // * Automatic, Try all methods
         _ =>
         {
-            println!("Landed in Automatic");
+            //println!("Landed in Automatic");
             for m in BalanceMode::iter()
             {
 
                 match m {
                     BalanceMode::SingleRoom => {
-                        result = fn_single_round(min_size, max_size, player_base, &mut rooms);
+                        result = fn_single_round(min_size, max_size, player_base, false, &mut rooms);
                     }
                     BalanceMode::FullRooms => {
-                        result = fn_full_rooms(min_size, max_size, player_base, &mut rooms);
+                        result = fn_full_rooms(max_size, player_base, false, &mut rooms);
                     }
                     BalanceMode::EvenSplit => {
-                        result = fn_even_split(min_size, max_size, player_base, &mut rooms);
+                        result = fn_even_split(min_size, max_size, player_base, false, &mut rooms);
                     }
                     BalanceMode::FullTailBalance => {
-                        result = fn_full_tail_balance(min_size, max_size, player_base, &mut rooms);
+                        result = fn_full_tail_balance(min_size, max_size, player_base, false, &mut rooms);
                     }
                     BalanceMode::FullBalance => {
-                        result = fn_full_balance(min_size, max_size, player_base, &mut rooms);
+                        result = fn_full_balance(min_size, max_size, player_base, false, &mut rooms);
                     }
                     BalanceMode::QuietRooms => {
-                        result = fn_minimum_fill(min_size, max_size, player_base, &mut rooms);
+                        result = fn_minimum_fill(min_size, max_size, player_base, false, &mut rooms);
                     }
                     _ => continue
                 }
@@ -429,7 +451,7 @@ fn main() {
     }
 
     // SHUFFLE THE PLAYERS
-    println!("*** Suffle Players ***");
+    //println!("*** Suffle Players ***");
     let mut rng = thread_rng();
     let mut names: Vec<&str> = Vec::new();
 
@@ -454,15 +476,15 @@ fn main() {
     // }
 
     // PUT INTO MATCHES
-    let mut matchCount = 0;
+    let mut match_count = 0;
     for i in 0..rooms.len()
     {
-        for j in 0..rooms[i].amount
+        for _j in 0..rooms[i].amount
         {
-            matchCount += 1;
-            println!("--- MATCH {0} ---", matchCount);
+            match_count += 1;
+            println!("--- MATCH {0} ---", match_count);
 
-            for l in 0..rooms[i].capacity
+            for _l in 0..rooms[i].capacity
             {
                 let player = order[0];
                 order.remove(0);
