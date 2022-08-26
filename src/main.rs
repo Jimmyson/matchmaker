@@ -43,7 +43,7 @@ struct Args {
     #[clap(short, long = "balance-mode", value_enum, default_value_t = BalanceMode::Automatic)]
     mode: BalanceMode,
 
-    //File with names of the players.
+    /// Text file with names of the players.
     #[clap(short, long, value_parser)]
     input: std::path::PathBuf,
 }
