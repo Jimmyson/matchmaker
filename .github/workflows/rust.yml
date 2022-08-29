@@ -37,9 +37,9 @@ jobs:
 
     runs-on: windows-latest
     
-    defaults:
-      run:
-        working-directory: 'matchmaker'
+    #defaults:
+    #  run:
+    #    working-directory: 'matchmaker'
         
     steps:
     - uses: actions/checkout@v3
