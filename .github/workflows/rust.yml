@@ -1,0 +1,60 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  linux_build:
+
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        shell: bash
+        #working-directory: 'matchmaker'
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: cargo build --release --verbose
+      
+    #- name: Run tests
+    #  run: cargo test --verbose
+      
+    - name: 'Upload build Artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: 'matchmaker-linux'
+        path: '${{ github.workspace }}/target/release/matchmaker'
+  
+  windows_build:
+
+    runs-on: windows-latest
+    
+    defaults:
+      run:
+        working-directory: 'matchmaker'
+
+    strategy:
+      matrix:
+        arch: [x64, x86]
+        
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: cargo build --release --verbose
+      
+    #- name: Run tests
+    #  run: cargo test --verbose
+      
+    - name: 'Upload build Artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: 'matchmaker-win-${{ matrix.arch }}'
+        path: '${{ github.workspace }}/target/release/matchmaker.exe'
