@@ -40,10 +40,6 @@ jobs:
     defaults:
       run:
         working-directory: 'matchmaker'
-
-    strategy:
-      matrix:
-        arch: [x64, x86]
         
     steps:
     - uses: actions/checkout@v3
@@ -56,5 +52,5 @@ jobs:
     - name: 'Upload build Artifact'
       uses: actions/upload-artifact@v3
       with:
-        name: 'matchmaker-win-${{ matrix.arch }}'
+        name: 'matchmaker-windows'
         path: '${{ github.workspace }}/target/release/matchmaker.exe'
